@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+  <xs:element name="response" type="response"/>
+  <xs:complexType name="response">
+    <xs:sequence>
+      <xs:element name="requestId" type="xs:string"/>
+      <xs:element name="confCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="status" type="status"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="status">
+    <xs:sequence>
+      <xs:element name="id" type="xs:int"/>
+      <xs:element name="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

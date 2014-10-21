@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>Package net.fourinfo.gateway</title>
+</head>
+<body>
+<p>The main package of the toolsforteams client for the <b>4info Messaging Gateway</b>.</p>
+<p>
+<b>Outbound (MT) messaging sample:</b><br/>
+Set up the gateway:
+<pre>
+Gateway gateway = new Gateway();
+gateway.setClientId("123");
+gateway.setClientKey("283G1835JO1FM1F");
+gateway.setCarrierListUrl("http://test-gateway.4info.net/list");
+gateway.setValidationRequestUrl("http://test-gateway.4info.net/msg")
+</pre>
+Send an SMS message:
+<pre>
+String message = "This is a test message.";
+String phoneNumber = "6505551212";
+Carrier carrier = new Carrier();
+carrier.setId(5);
+Response response = gateway.sendMessageRequest(message, carrier, phoneNumber);
+</pre>
+Send a validation SMS message:
+<pre>
+String phoneNumber = "6505551212";
+Carrier carrier = new Carrier();
+carrier.setId(5);
+Response response = gateway.sendMessageRequest(carrier, phoneNumber);
+</pre>
+Send a status query:
+<pre>
+String requestId = "F81D4FAE-7DEC-11D0-A765-00A0C91E6BF6";
+Response response = gateway.sendQueryRequest(requestId);
+</pre>
+</p>
+<p>
+<b>Inbound (MO) messaging sample:</b><br/>
+A servlet:
+<pre>
+public void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException
+{
+    // Parse the incoming XML
+    Sms sms = Gateway.parseSms(req.getInputStream());
+
+    // Dispatch the sms to your application for processing
+
+    // Respond indicating a successful receipt of the inbound message
+    resp.setStatus(HttpServletResponse.SC_OK);
+    PrintWriter out = resp.getWriter();
+    out.println("OK");
+    out.close();
+}
+</pre>
+
+<br>
+<br>
+<hr>
+See the <a href="http://www.toolsforteams.com/code/tft-4info/">project</a> for more information.
+
+</body>
+</html>

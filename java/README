@@ -1,0 +1,65 @@
+
+Java Messaging Gateway API Implementation
+
+An implementation of the Messaging Gateway API has been implemented for users of Java.
+The library requires Java 1.5 and Maven. If you have both installed, you can run 'mvn
+install' to build, test, and deploy the library into your Maven repository.
+
+
+Installing the Required Libraries
+
+Java 1.5 (http://java.sun.com/)
+The Java Messaging Gateway API Implementation was created using Sun's 1.5.0_10 Java SDK.
+
+Maven (http://maven.apache.org/)
+Maven is a software project management and comprehension tool. Based on the concept of a
+project object model (POM), Maven can manage a project's build, reporting and documentation
+from a central piece of information.
+
+
+Using the Java libraray
+
+Outbound (MT) messaging sample
+
+Set up the gateway:
+
+Gateway gateway = new Gateway();
+gateway.setClientId("25");
+gateway.setClientKey("283G1835JO1FM1F");
+gateway.setCarrierListUrl("http://test-gateway.4info.net/list");
+gateway.setValidationRequestUrl("http://test-gateway.4info.net/msg")
+
+Send an SMS message:
+
+String message = "This is a test message.";
+String phoneNumber = "6505551212";
+Carrier carrier = new Carrier();
+carrier.setId(5);
+Response response = gateway.sendMessageRequest(message, carrier, phoneNumber);
+
+Send a validation SMS message:
+
+String phoneNumber = "6505551212";
+Carrier carrier = new Carrier();
+carrier.setId(5);
+Response response = gateway.sendMessageRequest(carrier, phoneNumber);
+
+
+Inbound (MO) messaging sample
+
+A servlet:
+
+public void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException
+{
+    // Parse the incoming XML
+    Sms sms = Gateway.parseSms(req.getInputStream());
+ 
+    // Dispatch the sms to your application for processing
+ 
+    // Respond indicating a successful receipt of the inbound message
+    resp.setStatus(HttpServletResponse.SC_OK);
+    PrintWriter out = resp.getWriter();
+    out.println("OK");
+    out.close();
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+  <xs:element name="request" type="request"/>
+  <xs:complexType name="request">
+    <xs:choice>
+      <xs:element name="query" type="query"/>
+      <xs:element name="message" type="message"/>
+      <xs:element name="validation" type="validation"/>
+    </xs:choice>
+    <xs:attribute name="clientId" type="xs:int" use="required"/>
+    <xs:attribute name="clientKey" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="query">
+    <xs:sequence>
+      <xs:element name="requestId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="message">
+    <xs:sequence>
+      <xs:element name="price" type="xs:float"/>
+      <xs:element name="sender" type="qualifiedId" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="recipient" type="qualifiedId" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="text" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="validation">
+    <xs:sequence>
+      <xs:element name="recipient" type="qualifiedId"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="qualifiedId">
+    <xs:sequence>
+      <xs:element name="type" type="xs:int"/>
+      <xs:element name="id" type="xs:string"/>
+      <xs:element name="property" type="property" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="property">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

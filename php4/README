@@ -1,0 +1,123 @@
+
+PHP4 Messaging Gateway API Implementation
+
+An implementation of the Messaging Gateway API has been implemented for users of PHP4.
+The implementation uses PHP4's cURL library and XML parsing library.  In order to use
+this implementation, you will need both libraries installed.
+
+
+Installing the Required Libraries
+
+cURL Library (http://www.php.net/curl)
+To use PHP's cURL support you must also compile PHP --with-curl[=DIR] where DIR is the location 
+of the directory containing the lib and include directories. In the "include" directory 
+there should be a folder named "curl" which should contain the easy.h and curl.h files. 
+There should be a file named libcurl.a located in the "lib" directory. Beginning with 
+PHP 4.3.0 you can configure PHP to use cURL for URL streams --with-curlwrappers.
+
+XML Parsing Functions (http://www.php.net/xml)
+These functions are enabled by default, using the bundled expat library. You can disable XML
+support with --disable-xml. If you compile PHP as a module for Apache 1.3.9 or later, PHP will
+automatically use the bundled expat library from Apache. In order you don't want to use the 
+bundled expat library configure PHP --with-expat-dir=DIR, where DIR should point to the base 
+installation directory of expat. The windows version of PHP has built in support for this 
+extension. You do not need to load any additional extension in order to use these functions.
+
+
+Quick Note on Class Names
+
+You'll notice all class names in this implementation include the verbose prefix "_4INFO_Gateway_".
+Since PHP4 does not have a notion of namespaces, we've used verbose class names 
+to uniquely identify classes and prevent overlap with your pre-existing class definitions.  The 
+class name prefixes essentially define a unique 4INFO Gateway namespace when used in this manner.  
+We've used the same naming technique made popular by the Zend Framework 
+(http://framework.zend.com/manual/en/coding-standard.naming-conventions.html).
+
+
+Outbound (MT) messaging sample
+
+
+Set up the gateway:
+The constructor should be passed gateway credentials, including a clientId and clientKey.  
+If desired, a carrier list url and a message request url can be specified, otherwise the 
+default 4Info gateway values will be used.
+
+$gateway = new _4Info_Gateway();
+$gateway->setClientId('25');
+$gateway->setClientKey('283G1835JO1FM1F');
+$gateway->setCarrierListUrl('http://test-gateway.4info.net/list');
+$gateway->setMessageRequestUrl('http://test-gateway.4info.net/msg');
+
+or
+
+$gateway = new _4Info_Gateway('25','283G1835JO1FM1F');
+
+
+
+Get carrier list:
+To retrieve a list of supported carriers for the 4INFO Messaging Gateway, 
+instantiate a Gateway object with your client credentials and request a carrier list.
+
+$gateway = new _4Info_Gateway('25','283G1835JO1FM1F');
+$carriers = $gateway->getCarriers();
+
+
+
+Send a validation SMS message:
+
+$gateway = new _4Info_Gateway('25','283G1835JO1FM1F');
+$phoneNumber = '+16505551212';
+$response = $gateway->sendValidationRequest($phoneNumber);
+
+
+
+Send an SMS message:
+
+$gateway = new _4Info_Gateway('25','283G1835JO1FM1F');
+$sender = new _4Info_Gateway_Address('44636');
+$recipient = new _4Info_Gateway_Address('+16505551212');
+$message = 'Test message.';
+$sms = new _4Info_Gateway_Sms($sender, $recipient, $message);
+$response = $gateway->sendMessageRequest($sms);
+
+
+
+Inbound (MO) messaging sample (see MOServer)
+
+//Get the XML submitted to this servlet
+$xml = _4INFO_Gateway::getPostedXML(false);
+ 
+//Check that some xml was posted
+if(!$xml) {
+	header("HTTP/1.1 503 Service Unavailable");
+	exit;
+}
+
+// Parse the incoming XML SMS message
+$sms = _4INFO_Gateway::parseSms($xml);
+
+// TODO: Dispatch the sms to your application for processing
+
+// Respond indicating a successful receipt of the inbound message
+header("HTTP/1.1 202 Accepted");
+
+
+
+Inbound Blacklist sample (see BlacklistServer)
+
+//Get the XML submitted to this servlet
+$xml = _4INFO_Gateway::getPostedXML(false);
+ 
+//Check that some xml was posted
+if(!$xml) {
+	header("HTTP/1.1 503 Service Unavailable");
+	exit;
+}
+
+// Parse the incoming XML blacklist notification
+$address = _4INFO_Gateway::parseBlock($xml);
+
+// TODO: Dispatch the address to your application for processing
+
+// Respond indicating a successful receipt of the inbound message
+header("HTTP/1.1 202 Accepted");
